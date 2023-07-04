@@ -20,9 +20,9 @@ def train_nn():
     )
     # define head
     head = Microhead(
-        feature_sizes=[64],
-        concat_layers=[],
-        head_concat_layers=[11],
+        feature_sizes=[16, 32, 64],
+        concat_layers=[6, 4],
+        head_concat_layers=[15],
     )
 
     # load a model
