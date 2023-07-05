@@ -1,8 +1,8 @@
-from yolo.benchmarks import benchmark
+from micromind.yolo import benchmark
 
 # Benchmark on GPU
 benchmark(
-    model="./benchmark/weights/100epochs_1_head_no_SPPF/weights/best.pt",
+    model="./runs/detect/train3/weights/best.pt",
     imgsz=320,
     half=True,
     device="cpu",

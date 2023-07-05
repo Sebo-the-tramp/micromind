@@ -1,7 +1,7 @@
 from micromind import PhiNet
 
-from yolo.model import microYOLO
-from yolo.microyolohead import Microhead
+from micromind.yolo import microYOLO
+from micromind.yolo import Microhead
 
 
 def train_nn():

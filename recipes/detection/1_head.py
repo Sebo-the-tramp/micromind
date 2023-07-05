@@ -1,7 +1,7 @@
 from micromind import PhiNet
 
-from yolo.model import microYOLO
-from yolo.microyolohead import Microhead
+from micromind.yolo import microYOLO
+from micromind.yolo import Microhead
 
 
 def train_nn():
@@ -32,9 +32,9 @@ def train_nn():
 
     # Train the model
     model.train(
-        data="coco.yaml",
+        data="coco128.yaml",
         epochs=1,
-        imgsz=320,
+        imgsz=160,
         device="cpu",
         task="detect",
     )
