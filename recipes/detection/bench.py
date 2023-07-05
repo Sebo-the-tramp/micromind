@@ -1,8 +1,8 @@
-from benchmarks import benchmark
+from yolo.benchmarks import benchmark
 
 # Benchmark on GPU
 benchmark(
-    model="./weights/100epochs_1_head_baseline_yms.pt",
+    model="./benchmark/weights/100epochs_1_head_baseline_yms/weights/best.pt",
     imgsz=320,
     half=True,
     device="cpu",

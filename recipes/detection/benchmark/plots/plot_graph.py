@@ -18,9 +18,6 @@ def parse_text_file(file_name):
         column_names = lines[2].strip().split("  ")
         data_line = lines[5].split()[1:]
         data_line = [float(x) if can_be_float(x) else x for x in data_line]
-        print([type(x) for x in data_line])
-
-        print(data_line)
         data.append(data_line)
 
         return column_names, data_line
@@ -60,7 +57,7 @@ def read_data(folder):
     return parsed_data
 
 
-def plot_data_old(pre, trained, micro):
+def plot_data(pre, trained, micro):
 
     star_size = 400
 
@@ -169,44 +166,9 @@ def plot_data_old(pre, trained, micro):
     plt.show()
 
 
-def plot_data(data, columns):
-
-    pred = pd.DataFrame(columns)
-    print(pred)
-
-
-def show_data(data):
-    pass
-
-
 if __name__ == "__main__":
-    # folders
-
-    f = [
-        "100epochs_1_head_baseline_yms",
-        "100epochs_1_head_deeper",
-        "100epochs_1_head_no_SPPF",
-    ]
-
-    for folder in f:
-        path = "./data/" + folder + "/"
-        single_bench = read_data(path)
-
     pre = read_data("./data/pre-trained/")
     trained = read_data("./data/trained/")
     yolo_micro = read_data("./data/yolo_micro/")
 
-    # read data
-
-    # add data to plot
-
-    # read data
-
-    # add data to plot
-    data, columns = [], []
-
     plot_data(pre, trained, yolo_micro)
-
-    data = plot_data(data, columns)
-
-    show_data(data)
