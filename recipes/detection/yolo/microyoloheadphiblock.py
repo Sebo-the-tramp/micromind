@@ -297,8 +297,8 @@ class Microhead(nn.Module):
                 in_shape=(feature_sizes[0], 40, 40),
                 stride=1,
                 filters=feature_sizes[0],
-                expansion=4,
-                has_se=True,
+                expansion=0.5,
+                has_se=False,
                 block_id=21,
             )
 
