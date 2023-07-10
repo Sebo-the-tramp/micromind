@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from micromind.networks.phinet import PhiNetConvBlock
 
-from ultralytics.nn.modules import SPPF, Concat, Conv, Detect, Segment
+from ultralytics.nn.modules import SPPF, Concat, Detect, Segment
 
 
 class Microhead(nn.Module):
@@ -220,126 +220,6 @@ class Microhead(nn.Module):
                 for x in ([layer15.f] if isinstance(layer15.f, int) else layer15.f)
                 if x != -1
             )  # append to savelist
-
-            layer16 = Conv(feature_sizes[0], feature_sizes[0], 3, 2)
-            layer16.i, layer16.f, layer16.type, layer16.n = (
-                16 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
-                -1,
-                "ultralytics.nn.modules.conv.Conv",
-                1,
-            )
-            self._layers.append(layer16)
-            self._save.extend(
-                x % layer16.i
-                for x in ([layer16.f] if isinstance(layer16.f, int) else layer16.f)
-                if x != -1
-            )  # append to savelist
-
-            layer17 = Concat(1)
-            layer17.i, layer17.f, layer17.type, layer17.n = (
-                17 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
-                # previous layer concatenated to the second of the list minus the
-                # skipped layer
-                [
-                    -1,
-                    concat_layers[2]
-                    - skipped_concat_layer
-                    + (1 if deeper_head else 0)
-                    + (-1 if no_SPPF else 0),
-                ],  # the skipped connection is added because
-                # there might be some skipped layer and the nn has to take that into
-                # account
-                "ultralytics.nn.modules.conv.Concat",
-                1,
-            )
-            self._layers.append(layer17)
-            self._save.extend(
-                x % layer17.i
-                for x in ([layer17.f] if isinstance(layer17.f, int) else layer17.f)
-                if x != -1
-            )  # append to savelist
-
-            # layer18 = C2f(feature_sizes[0] + feature_sizes[1], feature_sizes[0], 1)
-            layer18 = PhiNetConvBlock(
-                in_shape=(feature_sizes[0] + feature_sizes[1], 40, 40),
-                stride=1,
-                filters=feature_sizes[1],
-                expansion=4,
-                has_se=True,
-                block_id=12,
-            )
-            layer18.i, layer18.f, layer18.type, layer18.n = (
-                18 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
-                -1,
-                "micromind.networks.PhiNetConvBlock",
-                3,
-            )
-            self._layers.append(layer18)
-            self._save.extend(
-                x % layer18.i
-                for x in ([layer18.f] if isinstance(layer18.f, int) else layer18.f)
-                if x != -1
-            )  # append to savelist
-
-            layer19 = Conv(feature_sizes[1], feature_sizes[1], 3, 2)
-            layer19.i, layer19.f, layer19.type, layer19.n = (
-                19 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
-                -1,
-                "ultralytics.nn.modules.conv.Conv",
-                1,
-            )
-            self._layers.append(layer19)
-            self._save.extend(
-                x % layer19.i
-                for x in ([layer19.f] if isinstance(layer19.f, int) else layer19.f)
-                if x != -1
-            )  # append to savelist
-
-            layer20 = Concat(1)
-            layer20.i, layer20.f, layer20.type, layer20.n = (
-                20 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
-                [-1, (9 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0))],
-                "ultralytics.nn.modules.conv.Concat",
-                1,
-            )
-            self._layers.append(layer20)
-            self._save.extend(
-                x % layer20.i
-                for x in ([layer20.f] if isinstance(layer20.f, int) else layer20.f)
-                if x != -1
-            )  # append to savelist
-
-            layer21 = PhiNetConvBlock(
-                in_shape=(feature_sizes[1] + feature_sizes[2], 40, 40),
-                stride=1,
-                filters=feature_sizes[2],
-                expansion=4,
-                has_se=True,
-                block_id=21,
-            )
-
-        else:
-            layer21 = PhiNetConvBlock(
-                in_shape=(feature_sizes[0], 40, 40),
-                stride=1,
-                filters=feature_sizes[0],
-                expansion=4,
-                has_se=True,
-                block_id=21,
-            )
-
-        layer21.i, layer21.f, layer21.type, layer21.n = (
-            21 + (2 if deeper_head else 0) + (-1 if no_SPPF else 0),
-            -1,
-            "micromind.networks.PhiNetConvBlock",
-            3,
-        )
-        self._layers.append(layer21)
-        self._save.extend(
-            x % layer21.i
-            for x in ([layer21.f] if isinstance(layer21.f, int) else layer21.f)
-            if x != -1
-        )  # append to savelist
 
         # based on the number of detections scales create the detections layers
         base_connections = [x - skipped_concat_layer for x in head_concat_layers]
