@@ -95,25 +95,6 @@ class Microhead(nn.Module):
             if x != -1
         )
 
-        """
-        if deeper_head:
-            layer10_d = nn.Upsample(scale_factor=2, mode="nearest")
-            layer10_d.i, layer10_d.f, layer10_d.type, layer10_d.n = (
-                12 + (-1 if no_SPPF else 0),
-                -1,
-                "torch.nn.modules.upsampling.Upsample",
-                1,
-            )
-            self._layers.append(layer10_d)
-            self._save.extend(
-                x % layer10_d.i
-                for x in (
-                    [layer10_d.f] if isinstance(layer10_d.f, int) else layer10_d.f
-                )
-                if x != -1
-            )
-        """
-
         if number_heads >= 1:
             layer11 = Concat(dimension=1)
             layer11.i, layer11.f, layer11.type, layer11.n = (
@@ -318,6 +299,23 @@ class Microhead(nn.Module):
                         )
                         if x != -1
                     )
+
+        if deeper_head:
+            layer10_d = nn.Upsample(scale_factor=2, mode="nearest")
+            layer10_d.i, layer10_d.f, layer10_d.type, layer10_d.n = (
+                21 + (-1 if no_SPPF else 0),
+                -1,
+                "torch.nn.modules.upsampling.Upsample",
+                1,
+            )
+            self._layers.append(layer10_d)
+            self._save.extend(
+                x % layer10_d.i
+                for x in (
+                    [layer10_d.f] if isinstance(layer10_d.f, int) else layer10_d.f
+                )
+                if x != -1
+            )
 
         # change the last layer based on the task to be performed
         if task == "detect":
