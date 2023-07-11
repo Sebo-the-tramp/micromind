@@ -288,7 +288,7 @@ class Microhead(nn.Module):
 
         # change the last layer based on the task to be performed
         if task == "detect":
-            head = Detect(nc, ch=[16])
+            head = Detect(nc, ch=[feature_sizes[0]])
             head.i, head.f, head.type, head.n = (
                 head_concat_layers[-1]
                 + 1

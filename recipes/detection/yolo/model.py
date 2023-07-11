@@ -87,7 +87,7 @@ class microYOLO(YOLO):
     """
 
     def __init__(
-        self, backbone=None, head=None, nc=80, task="detection", model=None
+        self, backbone=None, head=None, nc=80, task="detection", model=None, imgsz=640
     ) -> None:
         """
         Initializes the YOLO model.
@@ -110,6 +110,7 @@ class microYOLO(YOLO):
         self.session = None  # HUB session
         self.backbone = backbone
         self.head = head
+        self.imgsz = imgsz
 
         if model is None:
             if self.backbone is None or self.head is None:
@@ -141,6 +142,7 @@ class microYOLO(YOLO):
             head=self.head,
             nc=nc,
             verbose=verbose and RANK == -1,
+            imgsz=self.imgsz,
         )
         self.overrides["model"] = self.cfg
 

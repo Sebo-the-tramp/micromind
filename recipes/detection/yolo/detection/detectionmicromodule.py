@@ -25,7 +25,7 @@ class DetectionMicroModel(DetectionModel):
     """YOLOv8 custom detection model for micromind backbone."""
 
     def __init__(
-        self, backbone, head, cfg="yolov8micro", ch=3, nc=None, verbose=True
+        self, backbone, head, cfg="yolov8micro", ch=3, nc=None, verbose=True, imgsz=640
     ):  # model, input channels, number of classes
 
         if backbone is None:
@@ -63,7 +63,7 @@ class DetectionMicroModel(DetectionModel):
         # Init weights, biases
         initialize_weights(self)
         if verbose:
-            self.info()
+            self.info(imgsz=imgsz)
             LOGGER.info("")
 
 
@@ -128,6 +128,7 @@ def get_output_dim_layers(data_config, layers):
     x = torch.randn(*[1] + list(data_config["input_size"]))
     out_dim = [layers[0](x)]
     names = [layers[0].__class__]
+    print("Descr:", 0, names[-1], out_dim[-1].shape)
     for i, layer in enumerate(layers[1:], 1):
         if layer.__class__.__name__ == "Concat":
             out_dim.append(layer((out_dim[-1], out_dim[layer.f[1]])))
@@ -141,6 +142,14 @@ def get_output_dim_layers(data_config, layers):
             out_dim.append(layer(out_dim[-1]))
         names.append(layer.__class__)
         print("Descr:", i, names[-1], out_dim[-1].shape)
+        try:
+            p = layer.parameters()
+            # codice bruttissimo
+            if isinstance(list(p), list):
+                for i in list(p):
+                    print(i.shape if i is not None else None)
+        except Exception as e:
+            print(e)
     return [list(o.shape)[1:] for o in out_dim], names
 
 
