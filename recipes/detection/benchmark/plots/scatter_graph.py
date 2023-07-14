@@ -119,7 +119,7 @@ def show_graph(name):
 if __name__ == "__main__":
 
     axs = prepare_plot()
-    f = ["new_architecture"]
+    f = ["optimized"]
 
     for model in f:
         path = "./data/" + model + "/"
