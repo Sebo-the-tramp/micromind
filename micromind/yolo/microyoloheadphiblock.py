@@ -3,7 +3,7 @@ import torch.nn as nn
 
 from micromind.networks.phinet import PhiNetConvBlock
 
-from ultralytics.nn.modules import SPPF, Concat, Conv, Detect, Segment
+from ultralytics.nn.modules import SPPF, C2f, Concat, Conv, Detect, Segment
 
 
 class Microhead(nn.Module):
@@ -50,8 +50,6 @@ class Microhead(nn.Module):
             None
 
         """
-
-        # How many heads do you want?
 
         head_concat_layers = [
             x - 1 if no_SPPF else x + 1 if deeper_head else x
@@ -119,23 +117,11 @@ class Microhead(nn.Module):
                 if x != -1
             )
 
-            layer12 = PhiNetConvBlock(
-                in_shape=(
-                    feature_sizes[1] + feature_sizes[2],
-                    20 * scale_deep,
-                    20 * scale_deep,
-                ),
-                stride=1,
-                filters=feature_sizes[1],
-                expansion=0.5,
-                has_se=False,
-                block_id=12,
-            )
-            # layer12 = C2f(feature_sizes[1] + feature_sizes[2], feature_sizes[1], 1)
+            layer12 = C2f(feature_sizes[1] + feature_sizes[2], feature_sizes[1], 1)
             layer12.i, layer12.f, layer12.type, layer12.n = (
                 12 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
                 -1,
-                "micromind.networks.PhiNetConvBlock",
+                "ultralytics.nn.modules.block.C2f",
                 3,
             )
             self._layers.append(layer12)
@@ -174,24 +160,14 @@ class Microhead(nn.Module):
                 if x != -1
             )
 
-            layer15 = PhiNetConvBlock(
-                in_shape=(
-                    feature_sizes[0] + feature_sizes[1],
-                    40 * scale_deep,
-                    40 * scale_deep,
-                ),
-                stride=1,
-                filters=feature_sizes[0],
-                expansion=0.5,
-                has_se=False,
-                block_id=12,
-            )
+            layer15 = C2f(feature_sizes[0] + feature_sizes[1], feature_sizes[0], 1)
             layer15.i, layer15.f, layer15.type, layer15.n = (
                 15 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
                 -1,
-                "micromind.networks.PhiNetConvBlock",
+                "ultralytics.nn.modules.block.C2f",
                 3,
             )
+            layer15 = C2f(feature_sizes[0] + feature_sizes[1], feature_sizes[0], 1)
             self._layers.append(layer15)
             self._save.extend(
                 x % layer15.i
@@ -237,22 +213,11 @@ class Microhead(nn.Module):
                     if x != -1
                 )
 
-                layer18 = PhiNetConvBlock(
-                    in_shape=(
-                        feature_sizes[0] + feature_sizes[1],
-                        40 * scale_deep,
-                        40 * scale_deep,
-                    ),
-                    stride=1,
-                    filters=feature_sizes[1],
-                    expansion=0.5,
-                    has_se=False,
-                    block_id=12,
-                )
+                layer18 = C2f(feature_sizes[0] + feature_sizes[1], feature_sizes[1], 1)
                 layer18.i, layer18.f, layer18.type, layer18.n = (
                     18 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
                     -1,
-                    "micromind.networks.PhiNetConvBlock",
+                    "ultralytics.nn.modules.block.C2f",
                     3,
                 )
                 self._layers.append(layer18)
@@ -311,10 +276,11 @@ class Microhead(nn.Module):
                     has_se=False,
                     block_id=21,
                 )
+                layer21 = C2f(feature_sizes[1] + feature_sizes[2], feature_sizes[2], 1)
                 layer21.i, layer21.f, layer21.type, layer21.n = (
                     21 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
                     -1,
-                    "micromind.networks.PhiNetConvBlock",
+                    "ultralytics.nn.modules.block.C2f",
                     3,
                 )
                 self._layers.append(layer21)
