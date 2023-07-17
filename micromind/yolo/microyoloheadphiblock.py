@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 
-from micromind.networks.phinet import PhiNetConvBlock
-
 from ultralytics.nn.modules import SPPF, C2f, Concat, Conv, Detect, Segment
 
 
@@ -55,7 +53,6 @@ class Microhead(nn.Module):
             x - 1 if no_SPPF else x + 1 if deeper_head else x
             for x in head_concat_layers
         ]
-        scale_deep = 0.5 if deeper_head else 1
 
         # some errors checks
         if number_heads not in [1, 2, 3]:
@@ -167,7 +164,6 @@ class Microhead(nn.Module):
                 "ultralytics.nn.modules.block.C2f",
                 3,
             )
-            layer15 = C2f(feature_sizes[0] + feature_sizes[1], feature_sizes[0], 1)
             self._layers.append(layer15)
             self._save.extend(
                 x % layer15.i
@@ -264,18 +260,6 @@ class Microhead(nn.Module):
                     if x != -1
                 )
 
-                layer21 = PhiNetConvBlock(
-                    in_shape=(
-                        feature_sizes[1] + feature_sizes[2],
-                        20 * scale_deep,
-                        20 * scale_deep,
-                    ),
-                    stride=1,
-                    filters=feature_sizes[2],
-                    expansion=0.5,
-                    has_se=False,
-                    block_id=21,
-                )
                 layer21 = C2f(feature_sizes[1] + feature_sizes[2], feature_sizes[2], 1)
                 layer21.i, layer21.f, layer21.type, layer21.n = (
                     21 + (1 if deeper_head else 0) + (-1 if no_SPPF else 0),
