@@ -3,7 +3,7 @@ from micromind import PhiNet
 from micromind import microYOLO
 from micromind import Microhead
 
-import math
+# import math
 
 
 def train_nn():
@@ -11,21 +11,28 @@ def train_nn():
     # note for 0.33 -> write 0.335 for the round up error
     # if you get an error about shape incompatibility, try to slightly change the alpha
     #  value
-    _alpha = 0.67
+    _alpha = 3
     _deeper_head = True
 
-    _feature_sizes = [
-        math.ceil(16 * _alpha / 0.67),
-        math.ceil(32 * _alpha / 0.67),
-        math.ceil(64 * _alpha / 0.67),
-    ]
+    # hardcoded feature sizes
+    # I need to find another way
+    _feature_sizes = [144, 288, 576]
 
+    # generalizzare queste cose
+    """
+    _feature_sizes = [
+        math.ceil(16 * _alpha),
+        math.ceil(32 * _alpha),
+        math.ceil(64 * _alpha),
+
+    ]
     if _deeper_head:
         _feature_sizes = [
-            math.ceil(32 * _alpha / 0.67),
-            math.ceil(64 * _alpha / 0.67),
-            math.ceil(128 * _alpha / 0.67),
+            math.ceil(32 * _alpha),
+            math.ceil(64 * _alpha),
+            math.ceil(128 * _alpha),
         ]
+    """
 
     # the backbone is PhiNet
     # it changes the number of layers according to the alpha value
@@ -36,12 +43,12 @@ def train_nn():
         input_shape=(3, 320, 320),
         alpha=_alpha,
         num_layers=6 + (1 if _deeper_head else 0),
-        beta=1,
-        t_zero=4,
+        beta=0.75,
+        t_zero=6,
         include_top=False,
         num_classes=80,
-        compatibility=True,
-        downsampling_layers=[5, 7] + ([8] if _deeper_head else []),  # S2
+        compatibility=False,
+        # downsampling_layers=[5, 7] + ([8] if _deeper_head else []),  # S2
         squeeze_excite=False,
     )
 
@@ -62,7 +69,7 @@ def train_nn():
         concat_layers=[6, 4, 12, 9],
         head_concat_layers=[15, 18, 21],
         heads_used=[1, 1, 1],
-        deeper_head=_deeper_head,
+        deeper_head=_deeper_head,  # this will also change with deeper head
         no_SPPF=False,
     )
 
@@ -75,12 +82,9 @@ def train_nn():
     # Change the parameters also here
     # These parameters are the most lightweight possible in terms of training
     #
+    # Train the model
     model.train(
-        data="coco128.yaml",
-        epochs=1,
-        imgsz=320,
-        device="cpu",
-        task="detect",
+        data="coco.yaml", epochs=500, imgsz=320, device="cpu", task="detect", batch=128
     )
 
 
